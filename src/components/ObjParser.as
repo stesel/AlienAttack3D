@@ -3,6 +3,7 @@ package components
 	import flash.display3D.Context3D;
 	import flash.display3D.IndexBuffer3D;
 	import flash.display3D.VertexBuffer3D;
+	import flash.geom.Vector3D;
 	import flash.utils.ByteArray;
 	/**
 	 * ...
@@ -32,7 +33,7 @@ package components
 		private var _cachedRawNormalsBuffer:Vector.<Number>;
 		
 		//Raw data
-		protected var _rawIndexBuffer:Vector.<Number>;
+		protected var _rawIndexBuffer:Vector.<uint>;
 		protected var _rawPositionsBuffer:Vector.<Number>;
 		protected var _rawUvBuffer:Vector.<Number>;
 		protected var _rawNormalsBuffer:Vector.<Number>;
@@ -53,7 +54,7 @@ package components
 			_mirrorUv = textureFlip;
 			
 			_rawColorsBuffer = new Vector.<Number>();
-			_rawIndexBuffer = new Vector.<Number>();
+			_rawIndexBuffer = new Vector.<uint>();
 			_rawPositionsBuffer = new Vector.<Number>();
 			_rawUvBuffer = new Vector.<Number>();
 			_rawNormalsBuffer = new Vector.<Number>();
@@ -69,9 +70,15 @@ package components
 			
 			var lines:Array = defenition.split(LINE_FEED);
 			var loop:uint = lines.length;
-			for (var i:uint = o; i < loop; i++)
+			for (var i:uint = 0; i < loop; i++)
 				parseLine(lines[i]);
 		}
+		
+//--------------------------------------------------------------------------
+//
+//  Private Methods
+//
+//--------------------------------------------------------------------------
 		
 		private function readClass(obj:Class):String
 		{
@@ -223,6 +230,182 @@ package components
 			_rawIndexBuffer.push(_faceIndex + 0, _faceIndex + 1, _faceIndex + 2);
 			_faceIndex += 3;
 		}
+		
+//--------------------------------------------------------------------------
+//
+//  Getters and Setters
+//
+//--------------------------------------------------------------------------
+		
+		public function get colorsBuffer():VertexBuffer3D
+		{
+			if (!_colorsBuffer)
+				updateColorsBuffer();
+			return _colorsBuffer;
+		}
+		
+		public function get positionsBuffer():VertexBuffer3D
+		{
+			if (!_positionsBuffer)
+				updateVertexBuffer();
+			return _positionsBuffer;
+		}
+		
+		public function get indexBuffer():IndexBuffer3D
+		{
+			if (!_indexBuffer)
+				updateIndexBuffer();
+			return _indexBuffer;
+		}
+		
+		public function get indexBufferCount():int
+		{
+			return _rawIndexBuffer.length / 3;
+		}
+		
+		public function get uvBuffer():VertexBuffer3D
+		{
+			if (!_uvBuffer)
+				updateUvBuffer();
+			return _uvBuffer;
+		}
+		
+		public function get normalsBuffer():VertexBuffer3D
+		{
+			if (!_normalsBuffer)
+				updateNormalsBuffer();
+			return _normalsBuffer;
+		}
+		
+//--------------------------------------------------------------------------
+//
+//  Update Methods
+//
+//--------------------------------------------------------------------------
+		
+		public function updateColorsBuffer():void
+		{
+			if (_rawColorsBuffer.length == 0)
+				throw new Error("Raw Color buffer is empty");
+			var colorsCount:uint = _rawColorsBuffer.length / 4;
+			_colorsBuffer = _context3d.createVertexBuffer(colorsCount, 4);
+			_colorsBuffer.uploadFromVector(_rawColorsBuffer, 0, colorsCount);
+		}
+		
+		public function updateNormalsBuffer():void
+		{
+			if (_rawNormalsBuffer.length == 0)
+				forceNormals();
+			if (_rawNormalsBuffer.length == 0)
+				throw new Error("Raw Normal buffer is empty");
+			var normalsCount:uint = _rawNormalsBuffer.length / 3;
+			_normalsBuffer = _context3d.createVertexBuffer(normalsCount, 3);
+			_normalsBuffer.uploadFromVector(_rawNormalsBuffer, 0, normalsCount);
+		}
+		
+		public function updateVertexBuffer():void
+		{
+			if (_rawPositionsBuffer.length == 0)
+				throw new Error("Raw Vertex Buffer is empty");
+			var vertexCount:uint = _rawPositionsBuffer.length / 3;
+			_positionsBuffer = _context3d.createVertexBuffer(vertexCount, 3);
+			_positionsBuffer.uploadFromVector(_rawPositionsBuffer, 0, vertexCount);
+		}
+		
+		public function updateUvBuffer():void
+		{
+			if (_rawUvBuffer.length == 0)
+				throw new Error("Raw UV buffer is empty");
+			var uvsCount:uint = _rawUvBuffer.length / 2;
+			_uvBuffer = _context3d.createVertexBuffer(uvsCount, 2);
+			_uvBuffer.uploadFromVector(_rawUvBuffer, 0, uvsCount);
+		}
+		
+		public function updateIndexBuffer():void
+		{
+			if (_rawIndexBuffer.length == 0)
+				throw new Error("Raw Index buffer is empty");
+			_indexBuffer = _context3d.createIndexBuffer(_rawIndexBuffer.length);
+			_indexBuffer.uploadFromVector(_rawIndexBuffer, 0 , _rawIndexBuffer.length);
+		}
+		
+//--------------------------------------------------------------------------
+//
+//  Utils Methods
+//
+//--------------------------------------------------------------------------	
+		
+		public function restoreNormals():void
+		{
+			_rawNormalsBuffer = _cachedRawNormalsBuffer.concat();
+		}
+		
+		public function get3PointNormal(p0:Vector3D, p1:Vector3D, p2:Vector3D):Vector3D
+		{
+			var p0p1:Vector3D = p1.subtract(p0);
+			var p0p2:Vector3D = p2.subtract(p0);
+			var normal:Vector3D = p0p1.crossProduct(p0p2);
+			normal.normalize();
+			return normal;
+		}
+		
+		public function forceNormals():void
+		{
+			_cachedRawNormalsBuffer = _rawNormalsBuffer.concat();
+			
+			var i:uint;
+			var index:uint;
+			var loop:uint = _rawPositionsBuffer.length / 3;
+			var vertices:Vector.<Vector3D> = new Vector.<Vector3D>();
+			var vertex:Vector3D;
+			
+			for (i = 0; i < loop; i++)
+			{
+				index = 3 * i;
+				vertex = new Vector3D(_rawPositionsBuffer[index], _rawPositionsBuffer[index + 1], _rawPositionsBuffer[index + 2]);
+				vertices.push(vertex);
+			}
+			
+			loop = vertices.length;
+			var p0:Vector3D;
+			var p1:Vector3D;
+			var p2:Vector3D;
+			var normal:Vector3D;
+			
+			_rawNormalsBuffer = new Vector.<Number>();
+			
+			for (i = 0; i < loop; i += 3)
+			{
+				p0 = vertices[i];
+				p1 = vertices[i + 1];
+				p2 = vertices[i + 2];
+				normal = get3PointNormal(p0, p1, p2);
+				_rawNormalsBuffer.push(normal.x, normal.y, normal.z);
+				_rawNormalsBuffer.push(normal.x, normal.y, normal.z);
+				_rawNormalsBuffer.push(normal.x, normal.y, normal.z);
+			}
+		}
+		
+		public function dataDumpTrace():void
+		{
+			trace(dataDumpString());
+		}
+		
+		public function dataDumpString():String
+		{
+			var str:String;
+			str = "// Stage Model Data begins\n\n";
+			
+			str += "private var _Index:Vector.<uint> = new Vector.<uint>([" + _rawIndexBuffer.toString() + "]);\n\n";
+			str += "private var _Positions:Vector.<Number> = new Vector.<Number>([" + _rawPositionsBuffer.toString() + "]);\n\n";
+			str += "private var _Uvs:Vector.<Number> = new Vector.<Number>([" + _rawUvBuffer.toString() + "]);\n\n";
+			str += "private var _Normals:Vector.<Number> = new Vector.<Number>([" + _rawNormalsBuffer.toString() + "]);\n\n";
+			str += "private var _Colors:Vector.<Number> = new Vector.<Number>([" + _rawColorsBuffer.toString() + "]);\n\n";
+			str += "// Stage Model Data ends\n";
+			
+			return str;
+		}
+		
 	}
 
 }
