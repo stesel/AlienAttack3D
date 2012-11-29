@@ -120,7 +120,7 @@ package components
 			if (_vertexDataIsZxy)
 			{
 				if (!_vertices.length)
-					trace("zxy parce Vertex: " + data[1] + ", " + data[2] + ", " + data[0]);
+					trace("zxy parse Vertex: " + data[1] + ", " + data[2] + ", " + data[0]);
 				_vertices.push(Number(data[1]) * _scale);
 				_vertices.push(Number(data[2]) * _scale);
 				_vertices.push(Number(data[0]) * _scale);
@@ -199,34 +199,35 @@ package components
 				vertexIndex = int(subData[0]) - 1;
 				uvIndex = int(subData[1]) - 1;
 				normalIndex = int(subData[2]) - 1;
-			}
 			
-			if (vertexIndex < 0 )
-				vertexIndex = 0;
-			if (uvIndex < 0)
-				uvIndex = 0;
-			if (normalIndex < 0)
-				normalIndex = 0;
+				if (vertexIndex < 0 )
+					vertexIndex = 0;
+				if (uvIndex < 0)
+					uvIndex = 0;
+				if (normalIndex < 0)
+					normalIndex = 0;
+					
+				index = 3 * vertexIndex;
+				_rawPositionsBuffer.push(_vertices[index + 0], _vertices[index + 1], _vertices[index + 2]);
 				
-			index = 3 * vertexIndex;
-			_rawPositionsBuffer.push(_vertices[index + 0], _vertices[index + 1], _vertices[index + 2]);
+				if (_randomVertexColors)
+					_rawColorsBuffer.push(Math.random(), Math.random(), Math.random(), 1);
+				else
+					_rawColorsBuffer.push(1, 1, 1, 1);
+					
+				if (_normals.length)
+				{
+					index = 3 * normalIndex;
+					_rawNormalsBuffer.push(_normals[index + 0], _normals[index + 1], _normals[index + 2]);
+				}
+				
+				index = 2*uvIndex;
+				if (_mirrorUv)
+					_rawUvBuffer.push(_uvs[index + 0], 1 - _uvs[index + 1]);
+				else
+					_rawUvBuffer.push(1 - _uvs[index + 0], 1 - _uvs[index + 1]);
+			}	
 			
-			if (_randomVertexColors)
-				_rawColorsBuffer.push(Math.random(), Math.random(), Math.random(), 1);
-			else
-				_rawColorsBuffer.push(1, 1, 1, 1);
-				
-			if (_normals.length)
-			{
-				index = 3 * normalIndex;
-				_rawNormalsBuffer.push(_normals[index + 0], _normals[index + 1], _normals[index + 2]);
-			}
-			
-			if (_mirrorUv)
-				_rawUvBuffer.push(_uvs[index + 0], 1 - _uvs[index + 1]);
-			else
-				_rawUvBuffer.push(1 - _uvs[index + 0], 1 - _uvs[index + 1]);
-				
 			_rawIndexBuffer.push(_faceIndex + 0, _faceIndex + 1, _faceIndex + 2);
 			_faceIndex += 3;
 		}

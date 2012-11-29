@@ -190,17 +190,17 @@ package
 			var str:String;
 			score++;
 			if (score < 10)
-				str = "Score: 00000" + score.toString;
+				str = "Score: 00000" + score.toString();
 			else if (score < 100)
-				str = "Score: 0000" + score.toString;
+				str = "Score: 0000" + score.toString();
 			else if (score < 1000)
-				str = "Score: 000" + score.toString;
+				str = "Score: 000" + score.toString();
 			else if (score < 10000)
-				str = "Score: 00" + score.toString;
+				str = "Score: 00" + score.toString();
 			else if (score < 100000)
-				str = "Score: 0" + score.toString;
+				str = "Score: 0" + score.toString();
 			else
-				str = "Score: " + score.toString;
+				str = "Score: " + score.toString();
 				
 			scoreTf.text = str;	
 		}
@@ -267,8 +267,8 @@ package
 		private function initData():void 
 		{
 			//Parse Ship and Terrain
-			myMesh = new ObjParser(myObjData, context3D, 1, true, true);
-			terrainMesh = new ObjParser(terrainObjData, context3D, 1, true, true);
+			myMesh = new ObjParser(myObjData, context3D, 0.2, false, true);
+			terrainMesh = new ObjParser(terrainObjData, context3D, 2, true, true);
 		}
 		
 		private function initShaders():void 
@@ -344,7 +344,7 @@ package
 			
 			context3D.clear(0, 0, 0);
 			
-			t += 2.0;
+			t += 1.0;
 			
 			renderTerrain();
 			
@@ -360,7 +360,7 @@ package
 						modelMatrix.appendRotation(t * 0.7, Vector3D.Y_AXIS);
 						modelMatrix.appendRotation(t * 0.6, Vector3D.X_AXIS);
 						modelMatrix.appendRotation(t * 1.0, Vector3D.Y_AXIS);
-						modelMatrix.appendTranslation( -3, 3, 0);
+						modelMatrix.appendTranslation( -dist, dist, 0);
 						break;
 					case 1:
 						context3D.setTextureAt(0, null);
@@ -368,7 +368,7 @@ package
 						modelMatrix.appendRotation(t * - 0.2, Vector3D.Y_AXIS);
 						modelMatrix.appendRotation(t * 0.4, Vector3D.X_AXIS);
 						modelMatrix.appendRotation(t * 0.7, Vector3D.Y_AXIS);
-						modelMatrix.appendTranslation(3, 3, 0);
+						modelMatrix.appendTranslation(dist, dist, 0);
 						break;
 					case 2:
 						context3D.setTextureAt(0, myTexture);
@@ -376,7 +376,7 @@ package
 						modelMatrix.appendRotation(t * 1.0, Vector3D.Y_AXIS);
 						modelMatrix.appendRotation(t * 0.2, Vector3D.X_AXIS);
 						modelMatrix.appendRotation(t * 0.3, Vector3D.Y_AXIS);
-						modelMatrix.appendTranslation( -3, -3, 0);
+						modelMatrix.appendTranslation( -dist, -dist, 0);
 						break;
 					case 3:
 						//context3D.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, Vector.<Number>([1, Math.abs(Math.cos(t / 50)), 0, 1]));
@@ -386,7 +386,7 @@ package
 						modelMatrix.appendRotation(t * 0.3, Vector3D.Y_AXIS);
 						modelMatrix.appendRotation(t * 0.3, Vector3D.X_AXIS);
 						modelMatrix.appendRotation(t * -0.3, Vector3D.Y_AXIS);
-						modelMatrix.appendTranslation(3, -3, 0);
+						modelMatrix.appendTranslation(dist, -dist, 0);
 						break;
 				}
 				
@@ -400,10 +400,10 @@ package
 				//position
 				context3D.setVertexBufferAt(0, myMesh.positionsBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
 				//tex coord
-				context3D.setVertexBufferAt(1, myMesh.uvBuffer, 3, Context3DVertexBufferFormat.FLOAT_2);
+				context3D.setVertexBufferAt(1, myMesh.uvBuffer, 0, Context3DVertexBufferFormat.FLOAT_2);
 				//vertex rgba
-				context3D.setVertexBufferAt(2, myMesh.colorsBuffer, 8, Context3DVertexBufferFormat.FLOAT_4);
-				
+				context3D.setVertexBufferAt(2, myMesh.colorsBuffer, 0, Context3DVertexBufferFormat.FLOAT_4);
+				//render
 				context3D.drawTriangles(myMesh.indexBuffer, 0, myMesh.indexBufferCount);
 				
 			}
@@ -438,9 +438,9 @@ package
 			context3D.setVertexBufferAt(2, terrainMesh.colorsBuffer, 0, Context3DVertexBufferFormat.FLOAT_4);
 			
 			modelMatrix.identity();
-			modelMatrix.appendRotation( -90, Vector3D.Y_AXIS);
+			//modelMatrix.appendRotation( -90, Vector3D.Y_AXIS);
 			
-			modelMatrix.appendTranslation(Math.cos(t / 300) * 1000, Math.cos(t / 200) * 1000 + 500, -130);
+			modelMatrix.appendTranslation(Math.cos(t / 600) * 200, 0, Math.cos(t / 600) * 100);
 			
 			modelViewProjection.identity();
 			modelViewProjection.append(modelMatrix);
