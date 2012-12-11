@@ -10,18 +10,14 @@ package
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 	import flash.display3D.Context3D;
-	import flash.display3D.Context3DBlendFactor;
-	import flash.display3D.Context3DCompareMode;
 	import flash.display3D.Context3DProgramType;
 	import flash.display3D.Context3DTextureFormat;
-	import flash.display3D.Context3DTriangleFace;
 	import flash.display3D.Context3DVertexBufferFormat;
 	import flash.display3D.IndexBuffer3D;
 	import flash.display3D.Program3D;
 	import flash.display3D.textures.Texture;
 	import flash.display3D.VertexBuffer3D;
 	import flash.events.Event;
-	import flash.events.KeyboardEvent;
 	import flash.geom.Matrix;
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
@@ -35,7 +31,7 @@ package
 	 * ...
 	 * @author Leonid Trofimchuk
 	 */
-	public class Demo extends Sprite 
+	public class Demo1 extends Sprite 
 	{
 		private var fpsLast:uint = getTimer();
 		private var fpsTicks:uint = 0;
@@ -73,84 +69,9 @@ package
 		private var looptemp:int = 0;
 		
 		//Ship Texture
-		[Embed(source="../lib/ship.png")]
+		[Embed(source="../lib/craters.jpg")]
 		private var myTextureBitmap:Class;
 		private var myTextureData:Bitmap = new myTextureBitmap();
-		
-		
-		
-		
-		////////////
-		////////////
-		//Cluster
-		[Embed(source = "../lib/cluster.obj", mimeType = "application/octet-stream")]
-		private var myObjData1:Class;
-		
-		[Embed(source="../lib/puffCluster.obj", mimeType="application/octet-stream")]
-		private var myObjData2:Class;
-		
-		[Embed(source = "../lib/cube.obj", mimeType = "application/octet-stream")]
-		private var myObjData3:Class;
-		
-		[Embed(source="../lib/sphere.obj", mimeType="application/octet-stream")]
-		private var myObjData4:Class;
-		
-		private var myMesh1:ObjParser;
-		private var myMesh2:ObjParser;
-		private var myMesh3:ObjParser;
-		private var myMesh4:ObjParser;
-		private var myMesh5:ObjParser;
-		
-		//Leaf Texture
-		[Embed(source="../lib/leaf.png")]
-		private var myTextureBitmap1:Class;
-		private var myTextureData1:Bitmap = new myTextureBitmap1();
-		
-		//Fire Texture
-		[Embed(source="../lib/fire.jpg")]
-		private var myTextureBitmap2:Class;
-		private var myTextureData2:Bitmap = new myTextureBitmap2();
-		
-		//Flare Texture
-		[Embed(source="../lib/flare.jpg")]
-		private var myTextureBitmap3:Class;
-		private var myTextureData3:Bitmap = new myTextureBitmap3();
-		
-		//Glow Texture
-		[Embed(source="../lib/glow.jpg")]
-		private var myTextureBitmap4:Class;
-		private var myTextureData4:Bitmap = new myTextureBitmap4();
-		
-		//Smoke Texture
-		[Embed(source="../lib/smoke.jpg")]
-		private var myTextureBitmap5:Class;
-		private var myTextureData5:Bitmap = new myTextureBitmap5();
-		
-		
-		
-		private var blendNum:int = -1;
-		private var blendNumMax:int = 4;
-		private var texNum:int = -1;
-		private var texNumMax:int = 4;
-		private var meshNum:int = 0;
-		private var meshNumMax:int = 4;
-		
-		private var label1_:TextField;
-		private var label2_:TextField;
-		private var label3_:TextField;
-		
-		
-		
-		private var myTexture1:Texture;
-		private var myTexture2:Texture;
-		private var myTexture3:Texture;
-		private var myTexture4:Texture;
-		private var myTexture5:Texture;
-		private var myTexture6:Texture;
-		///////////////////////
-		/////////////////////
-		
-		
 		
 		//Terrain Texture
 		[Embed(source="../lib/terrain.png")]
@@ -161,7 +82,7 @@ package
 		private var terrainTexture:Texture;
 		
 		//Ship Mesh Data
-		[Embed(source = "../lib/ship.obj", mimeType = "application/octet-stream")]
+		[Embed(source="../lib/asteroids.obj", mimeType="application/octet-stream")]
 		private var myObjData:Class;
 		private var myMesh:ObjParser;
 		
@@ -169,10 +90,9 @@ package
 		[Embed(source="../lib/terrain.obj", mimeType="application/octet-stream")]
 		private var terrainObjData:Class;
 		private var terrainMesh:ObjParser;
-		private var myCubeTexture:Texture;
 		
 		
-		public function Demo():void 
+		public function Demo1():void 
 		{
 			if (stage) init();
 			else addEventListener(Event.ADDED_TO_STAGE, init);
@@ -186,7 +106,7 @@ package
 			
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align = StageAlign.TOP_LEFT;
-			//stage.addEventListener(Event.RESIZE, stage_resize);
+			stage.addEventListener(Event.RESIZE, stage_resize);
 			
 			initGUI();
 			
@@ -234,7 +154,7 @@ package
 			label1.autoSize = TextFieldAutoSize.LEFT;
 			label1.defaultTextFormat = myFormat;
 			label1.text = "Shader 1: Textured";
-			//addChild(label1);
+			addChild(label1);
 			
 			var label2:TextField = new TextField();
 			label2.x = 400;
@@ -243,7 +163,7 @@ package
 			label2.autoSize = TextFieldAutoSize.LEFT;
 			label2.defaultTextFormat = myFormat;
 			label2.text = "Shader 2: Vertex RGB";
-			//addChild(label2);
+			addChild(label2);
 			
 			var label3:TextField = new TextField();
 			label3.x = 80;
@@ -252,7 +172,7 @@ package
 			label3.autoSize = TextFieldAutoSize.LEFT;
 			label3.defaultTextFormat = myFormat;
 			label3.text = "Shader 3: Vertex RGB + Textured";
-			//addChild(label3);
+			addChild(label3);
 			
 			var label4:TextField = new TextField();
 			label4.x = 340;
@@ -261,34 +181,8 @@ package
 			label4.autoSize = TextFieldAutoSize.LEFT;
 			label4.defaultTextFormat = myFormat;
 			label4.text = "Shader 4: Textured + setProgramConstants";
-			//addChild(label4);
+			addChild(label4);
 			
-			label1_ = new TextField()
-			label1_.x = 100;
-			label1_.y = 50;
-			label1_.selectable = false;
-			label1_.autoSize = TextFieldAutoSize.LEFT;
-			label1_.defaultTextFormat = myFormat;
-			label1_.text = "///////B";
-			addChild(label1_);
-			
-			label2_ = new TextField()
-			label2_.x = 100;
-			label2_.y = 70;
-			label2_.selectable = false;
-			label2_.autoSize = TextFieldAutoSize.LEFT;
-			label2_.defaultTextFormat = myFormat;
-			label2_.text = "///////T";
-			addChild(label2_);
-			
-			label3_ = new TextField()
-			label3_.x = 100;
-			label3_.y = 90;
-			label3_.selectable = false;
-			label3_.autoSize = TextFieldAutoSize.LEFT;
-			label3_.defaultTextFormat = myFormat;
-			label3_.text = "///////M";
-			addChild(label3_);
 		}
 		
 		private function updateScore():void
@@ -330,25 +224,7 @@ package
 			
 			initShaders();
 			
-			//
-			myTexture1 = context3D.createTexture(myTextureData1.width, myTextureData1.height, Context3DTextureFormat.BGRA, false);
-			uploadTextureWithMipmaps(myTexture1, myTextureData1.bitmapData);
-			
-			myTexture2 = context3D.createTexture(myTextureData2.width, myTextureData2.height, Context3DTextureFormat.BGRA, false);
-			uploadTextureWithMipmaps(myTexture2, myTextureData2.bitmapData);
-			
-			myTexture3 = context3D.createTexture(myTextureData3.width, myTextureData3.height, Context3DTextureFormat.BGRA, false);
-			uploadTextureWithMipmaps(myTexture3, myTextureData3.bitmapData);
-			
-			myTexture4 = context3D.createTexture(myTextureData4.width, myTextureData4.height, Context3DTextureFormat.BGRA, false);
-			uploadTextureWithMipmaps(myTexture4, myTextureData4.bitmapData);
-			
-			myTexture5 = context3D.createTexture(myTextureData5.width, myTextureData5.height, Context3DTextureFormat.BGRA, false);
-			uploadTextureWithMipmaps(myTexture5, myTextureData5.bitmapData);
-			
-			
-			
-			myTexture = context3D.createTexture(textureSize, textureSize, Context3DTextureFormat.BGRA, false);
+			myTexture = context3D.createTexture(128, 128, Context3DTextureFormat.BGRA, false);
 			uploadTextureWithMipmaps(myTexture, myTextureData.bitmapData);
 			
 			terrainTexture = context3D.createTexture(textureSize, textureSize, Context3DTextureFormat.BGRA, false);
@@ -360,105 +236,8 @@ package
 			viewMatrix.identity();
 			viewMatrix.appendTranslation(0, 0, -3);
 			
-			//terrainviewmatrix.identity();
-			//terrainviewmatrix.appendRotation( -60, Vector3D.X_AXIS);
-			
 			addEventListener(Event.ENTER_FRAME, enterFrame);
-			stage.addEventListener(KeyboardEvent.KEY_DOWN, stage_keyDown);
 		}
-		
-		private function stage_keyDown(e:KeyboardEvent):void 
-		{
-			switch (e.keyCode)
-			{
-				case 66:   //B
-					nextBlendmode();
-					break;
-				case 77:  //M
-					nextMesh();
-					break;
-				case 84:  //T
-					nextTexture();
-					break;
-			}
-		}
-		
-		private function nextBlendmode():void 
-		{
-			blendNum++;
-			if (blendNum > blendNumMax)
-				blendNum = 0;
-			switch(blendNum)
-			{
-				case 0:
-					label1_.text = "[B] ONE, ZERO";
-					break;
-				case 1:
-					label1_.text = "[B] SOURCE_ALPHA, ONE_MINUS_SOURSE_ALPHA";
-					break;
-				case 2:
-					label1_.text = "[B] SOURCE_COLOR, ONE";
-					break;
-				case 3:
-					label1_.text = "[B] ONE, ONE";
-					break;
-				case 4:
-					label1_.text = "[B] DESTANETION_COLOR, ZERO";
-					break;
-			}	
-		}
-		
-		private function nextMesh():void 
-		{
-			meshNum++;
-			if (meshNum > meshNumMax)
-				meshNum = 0;
-			switch(meshNum)
-			{
-				case 0:
-					label3_.text = "[M] Random Particle Cluster";
-					break;
-				case 1:
-					label3_.text = "[M] Round Puff Cluster";
-					break;
-				case 2:
-					label3_.text = "[M] Cube Model";
-					break;
-				case 3:
-					label3_.text = "[M] Sphere Model";
-					break;
-				case 4:
-					label3_.text = "[M] Spaceship Model";
-					break;
-			}
-		}
-		
-		private function nextTexture():void 
-		{
-			texNum++;
-			if (texNum > texNumMax)
-				texNum = 0;
-			switch (texNum)
-			{
-				case 0:
-					label2_.text = "[T] Transparent Leaf Texture";
-					break;
-				case 1:
-					label2_.text = "[T] Fire Texture";
-					break;
-				case 2:
-					label2_.text = "[T] Lens Flare Texture";
-					break;
-				case 3:
-					label2_.text = "[T] Glow Texture";
-					break;
-				case 4:
-					label2_.text = "[T] Smoke Texture";
-					break;
-			}
-		}
-		
-		
 		
 		public function uploadTextureWithMipmaps(dest:Texture, scr:BitmapData):void
 		{
@@ -488,12 +267,7 @@ package
 		private function initData():void 
 		{
 			//Parse Ship and Terrain
-			myMesh1 = new ObjParser(myObjData1, context3D, 0.2, false, true);
-			myMesh2 = new ObjParser(myObjData2, context3D, 0.2, false, true);
-			myMesh3 = new ObjParser(myObjData3, context3D, 0.2, false, true);
-			myMesh4 = new ObjParser(myObjData4, context3D, 0.2, false, true);
-			myMesh5 = new ObjParser(myObjData, context3D, 0.2, false, true);
-			
+			myMesh = new ObjParser(myObjData, context3D, 0.2, false, true);
 			terrainMesh = new ObjParser(terrainObjData, context3D, 2, true, true);
 		}
 		
@@ -506,8 +280,21 @@ package
 				Context3DProgramType.VERTEX,
 				"m44 op, va0, vc0\n" +		//coordinates of each vertex to match the camera to Output Pos
 				"mov v0, va0\n" +			//XYZ to frag shader 
-				//"mov v1, va1\n" +			//UV to frag shader
-				"add v1, va1, vc4\n" +		//UV to frag shader
+				"mov v1, va1\n" +			//UV to frag shader
+				"mov v2, va2\n"				//RGBA to frag shader
+			);
+			
+			
+			var vertexShaderAssembler2:AGALMiniAssembler = new AGALMiniAssembler();
+			
+			vertexShaderAssembler2.assemble
+			(
+				Context3DProgramType.VERTEX,
+				"m44 vt0, va0, vc0\n" +		//coordinates of each vertex to match the camera to Output Pos
+				"add vt1, vt0, vc2\n" +
+				"mov op, vt1\n" + 
+				"mov v0, va0\n" +			//XYZ to frag shader 
+				"mov v1, va1\n" +			//UV to frag shader
 				"mov v2, va2\n"				//RGBA to frag shader
 			);
 			
@@ -519,8 +306,42 @@ package
 				"mov oc, ft0\n"									//store interpolated value to the Output Color
 			);
 			
+			var fragmentShaderAssembler2:AGALMiniAssembler = new AGALMiniAssembler();
+			fragmentShaderAssembler2.assemble
+			(
+				Context3DProgramType.FRAGMENT,
+				"mov oc, v2\n"				//grab RGBA form v2 to Output Color
+			);
+			
+			var fragmentShaderAssembler3:AGALMiniAssembler = new AGALMiniAssembler();
+			fragmentShaderAssembler3.assemble
+			(
+				Context3DProgramType.FRAGMENT,
+				"tex ft0, v1, fs0 <2d,repeat,miplinear>\n" +	//grab the texture color from texture 0 and uv coordinates from v1
+				"mul ft1, v2, ft0\n" +							//multiply by the value stored in v2(RGBA)
+				"mov oc, ft1\n"									//move ft1 to oc
+			);
+			
+			var fragmentShaderAssembler4:AGALMiniAssembler = new AGALMiniAssembler();
+			fragmentShaderAssembler4.assemble
+			(
+				Context3DProgramType.FRAGMENT,
+				"tex ft0 v1, fs <2d,repeat,miplinear>\n" +
+				"add ft1, ft0, fc0\n" +
+				"mov oc, ft1\n"
+			);
+			
 			shaderProgram1 = context3D.createProgram();
 			shaderProgram1.upload(vertexShaderAssembler.agalcode, fragmentShaderAssembler1.agalcode);
+			
+			shaderProgram2 = context3D.createProgram();
+			shaderProgram2.upload(vertexShaderAssembler.agalcode, fragmentShaderAssembler2.agalcode);
+			
+			shaderProgram3 = context3D.createProgram();
+			shaderProgram3.upload(vertexShaderAssembler.agalcode, fragmentShaderAssembler3.agalcode);
+			
+			shaderProgram4 = context3D.createProgram();
+			shaderProgram4.upload(vertexShaderAssembler.agalcode, fragmentShaderAssembler4.agalcode);
 		}
 		
 		private function enterFrame(e:Event):void 
@@ -532,8 +353,65 @@ package
 			
 			renderTerrain();
 			
-			renderMesh();
-			
+			var dist:Number = 0.8;
+			for (looptemp = 0; looptemp < 4; looptemp++)
+			{
+				modelMatrix.identity();
+				switch(looptemp)
+				{
+					case 0:
+						context3D.setTextureAt(0, myTexture);
+						context3D.setProgram(shaderProgram1);
+						modelMatrix.appendRotation(t * 0.7, Vector3D.Y_AXIS);
+						modelMatrix.appendRotation(t * 0.6, Vector3D.X_AXIS);
+						modelMatrix.appendRotation(t * 1.0, Vector3D.Y_AXIS);
+						modelMatrix.appendTranslation( -dist, dist, 0);
+						break;
+					case 1:
+						context3D.setTextureAt(0, null);
+						context3D.setProgram(shaderProgram2);
+						modelMatrix.appendRotation(t * - 0.2, Vector3D.Y_AXIS);
+						modelMatrix.appendRotation(t * 0.4, Vector3D.X_AXIS);
+						modelMatrix.appendRotation(t * 0.7, Vector3D.Y_AXIS);
+						modelMatrix.appendTranslation(dist, dist, 0);
+						break;
+					case 2:
+						context3D.setTextureAt(0, myTexture);
+						context3D.setProgram(shaderProgram3);
+						modelMatrix.appendRotation(t * 1.0, Vector3D.Y_AXIS);
+						modelMatrix.appendRotation(t * 0.2, Vector3D.X_AXIS);
+						modelMatrix.appendRotation(t * 0.3, Vector3D.Y_AXIS);
+						modelMatrix.appendTranslation( -dist, -dist, 0);
+						break;
+					case 3:
+						context3D.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, Vector.<Number>([1, Math.abs(Math.cos(t / 50)) * 0.4, 0, 5]));
+						context3D.setTextureAt(0, myTexture);
+						context3D.setProgram(shaderProgram4);
+						modelMatrix.appendRotation(t * 0.3, Vector3D.Y_AXIS);
+						modelMatrix.appendRotation(t * 0.3, Vector3D.X_AXIS);
+						modelMatrix.appendRotation(t * -0.3, Vector3D.Y_AXIS);
+						modelMatrix.appendTranslation(dist, -dist, 0);
+						break;
+				}
+				
+				modelViewProjection.identity();
+				modelViewProjection.append(modelMatrix);
+				modelViewProjection.append(viewMatrix);
+				modelViewProjection.append(projectionMatrix);
+				
+				context3D.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, modelViewProjection, true);
+				
+				//position
+				context3D.setVertexBufferAt(0, myMesh.positionsBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
+				//tex coord
+				context3D.setVertexBufferAt(1, myMesh.uvBuffer, 0, Context3DVertexBufferFormat.FLOAT_2);
+				//vertex rgba
+				context3D.setVertexBufferAt(2, myMesh.colorsBuffer, 0, Context3DVertexBufferFormat.FLOAT_4);
+				//render
+				context3D.drawTriangles(myMesh.indexBuffer, 0, myMesh.indexBufferCount);
+				
+			}
+				
 			context3D.present();
 				
 			//FPS
@@ -551,111 +429,8 @@ package
 			updateScore();
 		}
 		
-		private function renderMesh():void 
-		{
-			if (blendNum > 1)
-				context3D.setDepthTest(false, Context3DCompareMode.LESS);
-			else
-				context3D.setDepthTest(true, Context3DCompareMode.LESS);
-				
-			modelMatrix.identity();
-			context3D.setProgram(shaderProgram1);
-			setTexture();
-			setBlendmode();
-			modelMatrix.appendRotation(t * 0.7, Vector3D.Y_AXIS);
-			modelMatrix.appendRotation(t * 0.6, Vector3D.X_AXIS);
-			modelMatrix.appendRotation(t * 1.0, Vector3D.Z_AXIS);
-			
-			modelViewProjection.identity();
-			modelViewProjection.append(modelMatrix);
-			modelViewProjection.append(viewMatrix);
-			modelViewProjection.append(projectionMatrix);
-			
-			//context3D.setDepthTest(true, Context3DCompareMode.NOT_EQUAL);
-			//context3D.setCulling(Context3DTriangleFace.FRONT);
-			
-			context3D.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, modelViewProjection, true);
-			//context3D.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 0, Vector.<Number>([0, 0, 0, 0]));
-			context3D.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 4, Vector.<Number>([(Math.sin(t / 50000) * 1000), (Math.cos(t / 50000) * 1000), t, 0]));
-			
-			switch(meshNum)
-			{
-				case 0:
-					myMesh = myMesh1;
-					break;
-				case 1:
-					myMesh = myMesh2;
-					break;
-				case 2:
-					myMesh = myMesh3;
-					break;
-				case 3:
-					myMesh = myMesh4;
-					break;
-				case 4:
-					myMesh = myMesh5;
-					break;
-			}
-			
-			context3D.setVertexBufferAt(0, myMesh.positionsBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
-			context3D.setVertexBufferAt(1, myMesh.uvBuffer, 0, Context3DVertexBufferFormat.FLOAT_2);
-			context3D.setVertexBufferAt(2, myMesh.colorsBuffer, 0, Context3DVertexBufferFormat.FLOAT_4);
-			
-			context3D.drawTriangles(myMesh.indexBuffer, 0, myMesh.indexBufferCount);
-			
-		}
-		
-		private function setTexture():void 
-		{
-			switch(texNum)
-			{
-				case 0:
-					context3D.setTextureAt(0, myTexture1);
-					break;
-				case 1:
-					context3D.setTextureAt(0, myTexture2);
-					break;
-				case 2:
-					context3D.setTextureAt(0, myTexture3);
-					break;
-				case 3:
-					context3D.setTextureAt(0, myTexture4);
-					break;
-				case 4:
-					context3D.setTextureAt(0, myTexture5);
-					break;
-				case 5:
-					context3D.setTextureAt(0, myCubeTexture);
-			}
-		}
-		
-		private function setBlendmode():void 
-		{
-			switch(blendNum)
-			{
-				case 0:
-					context3D.setBlendFactors(Context3DBlendFactor.ONE, Context3DBlendFactor.ZERO);
-					break;
-				case 1:
-					context3D.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
-					break;
-				case 2:
-					context3D.setBlendFactors(Context3DBlendFactor.SOURCE_COLOR, Context3DBlendFactor.ONE);
-					break;
-				case 3:
-					context3D.setBlendFactors(Context3DBlendFactor.ONE, Context3DBlendFactor.ONE);
-					break;
-				case 4:
-					context3D.setBlendFactors(Context3DBlendFactor.DESTINATION_COLOR, Context3DBlendFactor.ZERO);
-					break;
-					
-			}
-		}
-		
 		private function renderTerrain():void
 		{
-			context3D.setBlendFactors(Context3DBlendFactor.ONE, Context3DBlendFactor.ZERO);
-			context3D.setDepthTest(true, Context3DCompareMode.LESS);
 			
 			context3D.setTextureAt(0, terrainTexture);
 			context3D.setProgram(shaderProgram1);
@@ -668,7 +443,7 @@ package
 			context3D.setVertexBufferAt(2, terrainMesh.colorsBuffer, 0, Context3DVertexBufferFormat.FLOAT_4);
 			
 			modelMatrix.identity();
-			modelMatrix.appendRotation( -90, Vector3D.Y_AXIS);
+			//modelMatrix.appendRotation( -90, Vector3D.Y_AXIS);
 			
 			modelMatrix.appendTranslation(Math.cos(t / 600) * 200, 0, Math.cos(t / 600) * 100);
 			
