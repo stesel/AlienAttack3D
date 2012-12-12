@@ -115,8 +115,8 @@ package components
 			mouseY = e.stageY;
 			if (mouseIsDown && mouseLookMode)
 			{
-				cameraAngleY = 90 * (mouseX - mouseClickX) / stage.width;
-				cameraAngleX = 90 * (mouseY - mouseClickY) / stage.height;
+				cameraAngleY = 180 * (mouseX - mouseClickX) / stage.width;
+				cameraAngleX = 180 * (mouseY - mouseClickY) / stage.height;
 			}
 		}
 		
