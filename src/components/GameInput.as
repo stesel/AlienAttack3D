@@ -23,6 +23,8 @@ package components
 		public var cameraAngleY:Number = 0;
 		public var cameraAngleZ:Number = 0;
 		
+		public var delta:int;
+		
 		public var mouseLookMode:Boolean = true;
 		
 		public var stage:Stage;
@@ -37,6 +39,7 @@ package components
 			stage.addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
 			stage.addEventListener(MouseEvent.MOUSE_UP, mouseUp);
 			stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
+			stage.addEventListener(MouseEvent.MOUSE_WHEEL, mouseWheel);
 		}
 		
 		private function keyDown(e:KeyboardEvent):void 
@@ -120,6 +123,15 @@ package components
 			}
 		}
 		
+		
+		private function mouseWheel(e:MouseEvent):void 
+		{
+			if (mouseLookMode)
+			{
+				delta -= e.delta / 3;
+				//trace(delta);
+			}
+		}	
 		
 		private function activate(e:Event):void 
 		{

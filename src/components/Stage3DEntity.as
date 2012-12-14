@@ -213,7 +213,7 @@ package components
 			if (_valuesNeedUpdate)
 				updateValuesFromTransform();
 			return _scaleX
-			_transformNeedsUpdate = true;
+			//_transformNeedsUpdate = true;
 		}
 		
 		public function set scaleXYZ(value:Number):void
@@ -221,7 +221,7 @@ package components
 			_scaleX = value;
 			_scaleY = value;
 			_scaleZ = value;
-			_transformNeedsUpdate;
+			_transformNeedsUpdate = true;
 		}
 		
 		public function get scaleX():Number

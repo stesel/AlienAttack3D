@@ -1,5 +1,6 @@
 package  
 {
+	import away3d.events.Stage3DEvent;
 	import com.adobe.utils.AGALMiniAssembler;
 	import com.adobe.utils.PerspectiveMatrix3D;
 	import components.GameInput;
@@ -35,10 +36,12 @@ package
 	 */
 	public class Main extends Sprite 
 	{
+		private static const RAD:Number = Math.PI / 180;
+		
 		private var gameTimer:GameTimer;
 		
 		private var gameInput:GameInput;
-		
+		private var cameraContainer:Stage3DEntity;
 		private var chaseCamera:Stage3DEntity;
 		
 		private var player:Stage3DEntity;
@@ -57,7 +60,7 @@ package
 		private var engineGlow:Stage3DEntity;
 		private var sky:Stage3DEntity;
 		
-		private const moveSpeed:Number = 1.0;
+		private const moveSpeed:Number = 0.3;
 		private const asteroidRotationSpeed:Number = 0.01;
 		
 		private var fpsLast:uint = getTimer();
@@ -88,7 +91,9 @@ package
 		private var cratersTextureBitmap:Class;
 		private var cratersTextureData:Bitmap = new cratersTextureBitmap() as Bitmap;
 		
-		[Embed(source = "../lib/sky.jpg")]
+		//[Embed(source = "../lib/sky.jpg")]
+		//[Embed(source="../lib/ski1.jpg")]
+		[Embed(source="../lib/ski1.jpg")]
 		private var skyTextureBitmap:Class;
 		private var skyTextureData:Bitmap = new skyTextureBitmap() as Bitmap;
 		
@@ -122,6 +127,16 @@ package
 		
 		[Embed(source = "../lib/sphere.obj", mimeType = "application/octet-stream")]
 		private var skyObjData:Class;
+		
+		private var moveXAmount:Number = 0;
+		private var moveYAmount:Number = 0;
+		private var moveZAmount:Number = 0;
+		
+		
+		private var sin:Number = 0;
+		private var cos:Number = 1;
+		
+		
 		
 		
 		public function Main() 
@@ -278,23 +293,29 @@ package
 		
 		private function initData():void 
 		{
+			
+			cameraContainer = new Stage3DEntity();
 			chaseCamera = new Stage3DEntity();
 			
 			player = new Stage3DEntity(shipObjData, context3D, shaderProgram1, playerTexture, 0.6, false, true);
 			player.rotationDegreesX = -90;
-			player.z = 2100;
+			player.y = 10;
+			player.z = 0;
 			
 			var terrain:Stage3DEntity = new Stage3DEntity(terrainObjData, context3D, shaderProgram1, terrainTexture, 1, false, true);
 			terrain.rotationDegreesX = 90;
 			terrain.cullingMode = Context3DTriangleFace.NONE;
 			terrain.scaleX = 10;
-			terrain.scaleY = 10;
+			terrain.scaleY = 5;
+			terrain.scaleZ = 10;
 			terrain.y = -50;
 			props.push(terrain);
 			
 			var terrain2:Stage3DEntity = terrain.clone();
 			terrain.z = -4000;
 			terrain2.cullingMode = Context3DTriangleFace.NONE;
+			//terrain2.scaleXYZ = 4;
+			
 			props.push(terrain2);
 			
 			asteroid1 = new Stage3DEntity(asteroidsObjData, context3D, shaderProgram1, cratersTexture, 1, false, true);
@@ -323,18 +344,18 @@ package
 			engineGlow.blendDst = Context3DBlendFactor.ONE;
 			engineGlow.depthTest = false;
 			engineGlow.cullingMode = Context3DTriangleFace.NONE;
-			engineGlow.y = -2;
-			engineGlow.scaleXYZ = 0.5;
+			engineGlow.y = -2.1;
+			engineGlow.rotationDegreesZ = 180;
 			particles.push(engineGlow);
 			
 			sky = new Stage3DEntity(skyObjData, context3D, shaderProgram1, skyTexture, 1, false, true);
-			sky.follow(player);
+			//sky.follow(player);
 			sky.depthTest = false;
 			sky.depthTestMode = Context3DCompareMode.LESS;
 			sky.cullingMode = Context3DTriangleFace.NONE;
 			sky.z = 2000;
-			sky.scaleX = 4000;
-			sky.scaleY = 4000;
+			sky.scaleX = 5000;
+			sky.scaleY = 5000;
 			sky.scaleZ = 3000;
 			sky.rotationDegreesX = 30;
 			props.push(sky);
@@ -414,15 +435,18 @@ package
 		private function renderScene():void
 		{
 			viewMatrix.identity();
+			viewMatrix.append(cameraContainer.transform);
 			
-			viewMatrix.append(chaseCamera.transform);
 			viewMatrix.invert();
 			
 			viewMatrix.appendRotation(15, Vector3D.X_AXIS);
+			viewMatrix.appendTranslation(player.x - chaseCamera.x, player.y - chaseCamera.y,  player.z - chaseCamera.z);
 			
-			viewMatrix.appendRotation(gameInput.cameraAngleX, Vector3D.X_AXIS);
-			viewMatrix.appendRotation(gameInput.cameraAngleY, Vector3D.Y_AXIS);
-			viewMatrix.appendRotation(gameInput.cameraAngleZ, Vector3D.Z_AXIS);
+			
+			
+			//viewMatrix.appendRotation(gameInput.cameraAngleX, Vector3D.X_AXIS);
+			//viewMatrix.appendRotation(gameInput.cameraAngleY, Vector3D.Y_AXIS);
+			//viewMatrix.appendRotation(gameInput.cameraAngleZ, Vector3D.Z_AXIS);
 			
 			player.render(viewMatrix, projectionMatrix);
 			
@@ -440,29 +464,95 @@ package
 		{
 			var moveAmount:Number = moveSpeed * frameMS;
 			
+			
+			
 			if (gameInput.pressing.up)
-				player.z -= moveAmount; 
+			{
+				moveZAmount = -moveSpeed * frameMS;
+				//player.z -= moveAmount; 
+			}
 				
 			if (gameInput.pressing.down)
-				player.z += moveAmount;
+			{
+				moveZAmount = moveSpeed * frameMS;
+				//player.z += moveAmount;
+			}
 				
 			if (gameInput.pressing.left)
-				player.x -= moveAmount;
+			{
+				//moveXAmount = -moveSpeed * frameMS;
+				//player.rotationDegreesY += moveAmount;
+				moveXAmount -= moveAmount * 0.1;
+				moveYAmount -= moveAmount;
+			}
 				
 			if (gameInput.pressing.right)
-				player.x += moveAmount;
+			{
+				//moveXAmount = moveSpeed * frameMS;
+				//player.rotationDegreesY -= moveAmount;
+				moveXAmount += moveAmount * 0.1;
+				moveYAmount += moveAmount;
+			}
 				
-			chaseCamera.x = player.x;
-			chaseCamera.y = player.y + 2;
-			chaseCamera.z = player.z + 5;
+			player.rotationDegreesY -= moveXAmount * 0.2;
+			
+			
+			cameraContainer.rotationDegreesY -= moveXAmount * 0.2;
+			
+			sin = Math.sin(player.rotationDegreesY * RAD);
+			cos = Math.cos(player.rotationDegreesY * RAD);
+			
+			//var matrix:Matrix3D;
+			//matrix = player.transform;
+			//matrix.prependRotation(moveYAmount, Vector3D.Y_AXIS);
+			//player.transform = matrix;
+			
+			
+			
+			
+			player.rotationDegreesZ = -moveYAmount * cos;
+			//player.rotationDegreesZ = -moveYAmount;
+			//player.rotationDegreesX = +moveYAmount * sin;
+			
+			
+			player.x += moveZAmount * sin;
+			player.z += moveZAmount * cos;
+			
+			
+			
+			moveXAmount *= 0.96;
+			moveYAmount *= 0.8;
+			moveZAmount *= 0.96;
+			
+			
+			
+			cameraContainer.x = player.x;
+			cameraContainer.y = player.y;
+			cameraContainer.z = player.z;
+			
+			
+			chaseCamera.x = cameraContainer.x;
+			chaseCamera.y = cameraContainer.y + 2;
+			chaseCamera.z = cameraContainer.z + gameInput.delta + 8;
+			
+			
+			cameraContainer.rotationDegreesX -= gameInput.cameraAngleX * 0.1;
+			cameraContainer.rotationDegreesY -= gameInput.cameraAngleY * 0.1;
+			cameraContainer.rotationDegreesZ += gameInput.cameraAngleZ;
+			
+			
 			
 			asteroid1.rotationDegreesX += asteroidRotationSpeed * frameMS;
 			asteroid2.rotationDegreesX -= asteroidRotationSpeed * frameMS;
 			asteroid3.rotationDegreesX += asteroidRotationSpeed * frameMS;
 			asteroid4.rotationDegreesX -= asteroidRotationSpeed * frameMS;
 			
-			engineGlow.rotationDegreesZ += 10 * frameMS;
+			engineGlow.rotationDegreesY += 10 * frameMS;
 			engineGlow.scaleXYZ = Math.cos(gameTimer.gameElapsedTime / 66) / 20 + 0.5;
+			
+			sky.x = player.x;
+			sky.y = player.y;
+			sky.z = player.z;
 				
 		}
 		
