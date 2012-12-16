@@ -440,7 +440,7 @@ package
 			viewMatrix.invert();
 			
 			viewMatrix.appendRotation(15, Vector3D.X_AXIS);
-			viewMatrix.appendTranslation(player.x - chaseCamera.x, player.y - chaseCamera.y,  player.z - chaseCamera.z);
+			viewMatrix.appendTranslation(chaseCamera.x, chaseCamera.y, chaseCamera.z);
 			
 			
 			
@@ -495,8 +495,6 @@ package
 			}
 				
 			player.rotationDegreesY -= moveXAmount * 0.2;
-			
-			
 			cameraContainer.rotationDegreesY -= moveXAmount * 0.2;
 			
 			sin = Math.sin(player.rotationDegreesY * RAD);
@@ -510,8 +508,8 @@ package
 			
 			
 			
-			player.rotationDegreesZ = -moveYAmount * cos;
-			//player.rotationDegreesZ = -moveYAmount;
+			//player.rotationDegreesZ = -moveYAmount * cos;
+			player.rotationDegreesZ = -moveYAmount;
 			//player.rotationDegreesX = +moveYAmount * sin;
 			
 			
@@ -531,9 +529,9 @@ package
 			cameraContainer.z = player.z;
 			
 			
-			chaseCamera.x = cameraContainer.x;
-			chaseCamera.y = cameraContainer.y + 2;
-			chaseCamera.z = cameraContainer.z + gameInput.delta + 8;
+			chaseCamera.x = 0;
+			chaseCamera.y = -2;
+			chaseCamera.z = -gameInput.delta - 8;
 			
 			
 			cameraContainer.rotationDegreesX -= gameInput.cameraAngleX * 0.1;
@@ -547,7 +545,7 @@ package
 			asteroid3.rotationDegreesX += asteroidRotationSpeed * frameMS;
 			asteroid4.rotationDegreesX -= asteroidRotationSpeed * frameMS;
 			
-			engineGlow.rotationDegreesY += 10 * frameMS;
+			engineGlow.rotationDegreesY -= 10 * frameMS;
 			engineGlow.scaleXYZ = Math.cos(gameTimer.gameElapsedTime / 66) / 20 + 0.5;
 			
 			sky.x = player.x;
