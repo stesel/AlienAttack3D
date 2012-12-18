@@ -44,6 +44,7 @@ package
 		private var cameraContainer:Stage3DEntity;
 		private var chaseCamera:Stage3DEntity;
 		
+		private var playerContainer:Stage3DEntity;
 		private var player:Stage3DEntity;
 		private var props:Vector.<Stage3DEntity>;
 		private var enemies:Vector.<Stage3DEntity>;
@@ -181,7 +182,7 @@ package
 		
 		private function heartBeat():void 
 		{
-			 trace("heartbeat at " + gameTimer.gameElapsedTime + 'ms');
+			trace("heartbeat at " + gameTimer.gameElapsedTime + 'ms');
 			trace("player " + player.posString());
 			trace("camera " + chaseCamera.posString());
 		}
@@ -297,10 +298,16 @@ package
 			cameraContainer = new Stage3DEntity();
 			chaseCamera = new Stage3DEntity();
 			
+			playerContainer = new Stage3DEntity();
+			playerContainer.rotationDegreesX = -90;
+			playerContainer.y = 10;
+			playerContainer.z = 0;
+			
 			player = new Stage3DEntity(shipObjData, context3D, shaderProgram1, playerTexture, 0.6, false, true);
-			player.rotationDegreesX = -90;
-			player.y = 10;
-			player.z = 0;
+			player.follow(playerContainer);
+			//player.rotationDegreesX = -90;
+			//player.y = 10;
+			//player.z = 0;
 			
 			var terrain:Stage3DEntity = new Stage3DEntity(terrainObjData, context3D, shaderProgram1, terrainTexture, 1, false, true);
 			terrain.rotationDegreesX = 90;
@@ -337,15 +344,15 @@ package
 			asteroid4.y = -500;
 			props.push(asteroid4);
 			
-			engineGlow = new Stage3DEntity(skyObjData, context3D, shaderProgram1, puffTexture, 0.3, false, true);
+			engineGlow = new Stage3DEntity(puffObjData, context3D, shaderProgram1, puffTexture, 1, false, true);
 			
-			engineGlow.follow(player);
+			engineGlow.follow(playerContainer);
 			engineGlow.blendScr = Context3DBlendFactor.ONE;
 			engineGlow.blendDst = Context3DBlendFactor.ONE;
 			engineGlow.depthTest = false;
 			engineGlow.cullingMode = Context3DTriangleFace.NONE;
 			engineGlow.y = -2.1;
-			engineGlow.rotationDegreesZ = 180;
+			engineGlow.rotationDegreesX = 90;
 			particles.push(engineGlow);
 			
 			sky = new Stage3DEntity(skyObjData, context3D, shaderProgram1, skyTexture, 1, false, true);
@@ -353,11 +360,11 @@ package
 			sky.depthTest = false;
 			sky.depthTestMode = Context3DCompareMode.LESS;
 			sky.cullingMode = Context3DTriangleFace.NONE;
-			sky.z = 2000;
+			sky.z = 0;
 			sky.scaleX = 5000;
-			sky.scaleY = 5000;
-			sky.scaleZ = 3000;
-			sky.rotationDegreesX = 30;
+			sky.scaleY = 3000;
+			sky.scaleZ = 5000;
+			sky.rotationDegreesX = 120;
 			props.push(sky);
 			
 		}
@@ -442,8 +449,6 @@ package
 			viewMatrix.appendRotation(15, Vector3D.X_AXIS);
 			viewMatrix.appendTranslation(chaseCamera.x, chaseCamera.y, chaseCamera.z);
 			
-			
-			
 			//viewMatrix.appendRotation(gameInput.cameraAngleX, Vector3D.X_AXIS);
 			//viewMatrix.appendRotation(gameInput.cameraAngleY, Vector3D.Y_AXIS);
 			//viewMatrix.appendRotation(gameInput.cameraAngleZ, Vector3D.Z_AXIS);
@@ -465,80 +470,70 @@ package
 			var moveAmount:Number = moveSpeed * frameMS;
 			
 			
-			
 			if (gameInput.pressing.up)
 			{
 				moveZAmount = -moveSpeed * frameMS;
-				//player.z -= moveAmount; 
 			}
 				
 			if (gameInput.pressing.down)
 			{
-				moveZAmount = moveSpeed * frameMS;
-				//player.z += moveAmount;
+				moveZAmount = moveSpeed * frameMS * 0.5;
 			}
 				
 			if (gameInput.pressing.left)
 			{
-				//moveXAmount = -moveSpeed * frameMS;
-				//player.rotationDegreesY += moveAmount;
 				moveXAmount -= moveAmount * 0.1;
-				moveYAmount -= moveAmount;
+				if(moveYAmount >= -30)
+					moveYAmount -= moveAmount * 0.3;
 			}
 				
 			if (gameInput.pressing.right)
 			{
-				//moveXAmount = moveSpeed * frameMS;
-				//player.rotationDegreesY -= moveAmount;
 				moveXAmount += moveAmount * 0.1;
-				moveYAmount += moveAmount;
+				if(moveYAmount <= 30)
+					moveYAmount += moveAmount * 0.3;
 			}
-				
-			player.rotationDegreesY -= moveXAmount * 0.2;
-			cameraContainer.rotationDegreesY -= moveXAmount * 0.2;
 			
-			sin = Math.sin(player.rotationDegreesY * RAD);
-			cos = Math.cos(player.rotationDegreesY * RAD);
-			
-			//var matrix:Matrix3D;
-			//matrix = player.transform;
-			//matrix.prependRotation(moveYAmount, Vector3D.Y_AXIS);
-			//player.transform = matrix;
-			
-			
+			if (moveZAmount <= 0)
+			{
+				playerContainer.rotationDegreesY -= moveXAmount * 0.2;
+				cameraContainer.rotationDegreesY -= moveXAmount * 0.2;
+			}
+			else if (moveZAmount > 0)
+			{
+				playerContainer.rotationDegreesY += moveXAmount * 0.2;
+				cameraContainer.rotationDegreesY += moveXAmount * 0.2;
+			}
 			
 			
-			//player.rotationDegreesZ = -moveYAmount * cos;
-			player.rotationDegreesZ = -moveYAmount;
-			//player.rotationDegreesX = +moveYAmount * sin;
+			sin = Math.sin(playerContainer.rotationDegreesY * RAD);
+			cos = Math.cos(playerContainer.rotationDegreesY * RAD);
 			
+			player.rotationDegreesY = moveYAmount;
 			
-			player.x += moveZAmount * sin;
-			player.z += moveZAmount * cos;
+			playerContainer.x += moveZAmount * sin;
+			playerContainer.z += moveZAmount * cos;
 			
 			
 			
 			moveXAmount *= 0.96;
-			moveYAmount *= 0.8;
 			moveZAmount *= 0.96;
+			if (!gameInput.pressing.right && !gameInput.pressing.left)
+			moveYAmount *= 0.8;
 			
 			
-			
-			cameraContainer.x = player.x;
-			cameraContainer.y = player.y;
-			cameraContainer.z = player.z;
+			cameraContainer.x = playerContainer.x;
+			cameraContainer.y = playerContainer.y;
+			cameraContainer.z = playerContainer.z;
 			
 			
 			chaseCamera.x = 0;
 			chaseCamera.y = -2;
 			chaseCamera.z = -gameInput.delta - 8;
 			
-			
 			cameraContainer.rotationDegreesX -= gameInput.cameraAngleX * 0.1;
 			cameraContainer.rotationDegreesY -= gameInput.cameraAngleY * 0.1;
 			cameraContainer.rotationDegreesZ += gameInput.cameraAngleZ;
-			
-			
 			
 			asteroid1.rotationDegreesX += asteroidRotationSpeed * frameMS;
 			asteroid2.rotationDegreesX -= asteroidRotationSpeed * frameMS;
@@ -548,9 +543,9 @@ package
 			engineGlow.rotationDegreesY -= 10 * frameMS;
 			engineGlow.scaleXYZ = Math.cos(gameTimer.gameElapsedTime / 66) / 20 + 0.5;
 			
-			sky.x = player.x;
-			sky.y = player.y;
-			sky.z = player.z;
+			sky.x = playerContainer.x;
+			sky.y = playerContainer.y;
+			sky.z = playerContainer.z;
 				
 		}
 		
