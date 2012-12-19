@@ -269,7 +269,7 @@ package components
 //
 //--------------------------------------------------------------------------
 		
-		protected function updateValuesFromTransform():void 
+		public function updateValuesFromTransform():void 
 		{
 			var d:Vector.<Vector3D> = _transform.decompose();
 			
@@ -291,7 +291,7 @@ package components
 			_valuesNeedUpdate = false;
 		}
 		
-		protected function updateTransformFromValues():void 
+		public function updateTransformFromValues():void 
 		{
 			_transform.identity();
 			
