@@ -84,7 +84,8 @@ package
 		private var playerTextureBitmap:Class;
 		private var playerTextureData:Bitmap = new playerTextureBitmap() as Bitmap;
 		
-		[Embed(source="../lib/terrain.jpg")]
+		//[Embed(source="../lib/terrain.jpg")]
+		[Embed(source="../lib/t3.jpg")]
 		private var terrainTextureBitmap:Class;
 		private var terrainTextureData:Bitmap = new terrainTextureBitmap() as Bitmap;
 		
@@ -120,7 +121,8 @@ package
 		[Embed(source = "../lib/puffCluster.obj", mimeType = "application/octet-stream")]
 		private var puffObjData:Class;
 		
-		[Embed(source="../lib/terrain.obj", mimeType="application/octet-stream")]
+		//[Embed(source="../lib/terrain.obj", mimeType="application/octet-stream")]
+		[Embed(source="../lib/terrain3.obj", mimeType="application/octet-stream")]
 		private var terrainObjData:Class;
 		
 		[Embed(source = "../lib/asteroids.obj", mimeType = "application/octet-stream")]
@@ -309,13 +311,15 @@ package
 			//player.y = 10;
 			//player.z = 0;
 			
-			var terrain:Stage3DEntity = new Stage3DEntity(terrainObjData, context3D, shaderProgram1, terrainTexture, 1, false, true);
+			var terrain:Stage3DEntity = new Stage3DEntity(terrainObjData, context3D, shaderProgram1, terrainTexture, 1, false, false);
 			terrain.rotationDegreesX = 90;
 			terrain.cullingMode = Context3DTriangleFace.NONE;
-			terrain.scaleX = 10;
-			terrain.scaleY = 5;
-			terrain.scaleZ = 10;
+			terrain.scaleX = 5;
+			terrain.scaleY = 3;
+			terrain.scaleZ = 5;
+			terrain.x = 0;
 			terrain.y = -50;
+			terrain.z = 0;
 			props.push(terrain);
 			
 			var terrain2:Stage3DEntity = terrain.clone();
@@ -323,7 +327,7 @@ package
 			terrain2.cullingMode = Context3DTriangleFace.NONE;
 			//terrain2.scaleXYZ = 4;
 			
-			props.push(terrain2);
+			//props.push(terrain2);
 			
 			asteroid1 = new Stage3DEntity(asteroidsObjData, context3D, shaderProgram1, cratersTexture, 1, false, true);
 			asteroid1.scaleXYZ = 200;
