@@ -38,10 +38,13 @@ package components
 			particlesActive = 0;
 			for each (particleList in allParticles)
 			{
-				if (particle.active)
+				for each (particle in particleList)
 				{
-					particlesActive++;
-					particle.step
+					if (particle.active)
+					{
+						particlesActive++;
+						particle.step(ms);
+					}
 				}
 			}
 		}
@@ -78,28 +81,27 @@ package components
 						}
 					}
 				}
-			}
-			else
-			{
-				trace("This is first " + name + " particle.");
-				allParticles[name] = new Vector.<Particle3D>;
-			
-				if (!reused)
-				{
-					particlesCreated++;
-					trace("Creating new " + name);
-					trace("Total particles " + particlesCreated);
-					
-					var newParticle:Particle3D = allKinds[name].cloneParticle(); 
-					newParticle.respawn(pos, maxage, scale1, scale2);
-					newParticle.updateValuesFromTransform();
-					allParticles[name].push(newParticle);
-				}
 				else
-					trace("Error: unknown particle type: " + name);
+				{
+					trace("This is first " + name + " particle.");
+					allParticles[name] = new Vector.<Particle3D>;
+					
+					if (!reused)
+					{
+						particlesCreated++;
+						trace("Creating new " + name);
+						trace("Total particles " + particlesCreated);
+						
+						var newParticle:Particle3D = allKinds[name].cloneParticle(); 
+						newParticle.respawn(pos, maxage, scale1, scale2);
+						newParticle.updateValuesFromTransform();
+						allParticles[name].push(newParticle);
+					}
+					else
+						trace("Error: unknown particle type: " + name);
+				}
 			}
 		}
-		
 	}
 
 }

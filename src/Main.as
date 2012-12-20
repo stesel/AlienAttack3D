@@ -5,6 +5,8 @@ package
 	import com.adobe.utils.PerspectiveMatrix3D;
 	import components.GameInput;
 	import components.GameTimer;
+	import components.Particle3D;
+	import components.ParticleSystem;
 	import components.Stage3DEntity;
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
@@ -61,7 +63,7 @@ package
 		private var engineGlow:Stage3DEntity;
 		private var sky:Stage3DEntity;
 		
-		private const moveSpeed:Number = 0.3;
+		private const moveSpeed:Number = 0.5;
 		private const asteroidRotationSpeed:Number = 0.01;
 		
 		private var fpsLast:uint = getTimer();
@@ -121,8 +123,8 @@ package
 		[Embed(source = "../lib/puffCluster.obj", mimeType = "application/octet-stream")]
 		private var puffObjData:Class;
 		
-		//[Embed(source="../lib/terrain.obj", mimeType="application/octet-stream")]
-		[Embed(source="../lib/terrain3.obj", mimeType="application/octet-stream")]
+		[Embed(source="../lib/terrain.obj", mimeType="application/octet-stream")]
+		//[Embed(source="../lib/terrain3.obj", mimeType="application/octet-stream")]
 		private var terrainObjData:Class;
 		
 		[Embed(source = "../lib/asteroids.obj", mimeType = "application/octet-stream")]
@@ -138,6 +140,30 @@ package
 		
 		private var sin:Number = 0;
 		private var cos:Number = 1;
+		
+		
+		//////Particles
+		private var nextShootTime:uint = 0;
+		private var shootDelay:uint = 2000;
+		private var explo:Particle3D;
+		private var particleSystem:ParticleSystem;
+		private var scenePolycount:uint = 0;
+		
+		private var particleTexture1:Texture;
+		
+		//Sparks1 Texture
+		[Embed(source="../lib/Sparks1.jpg")]
+		private var particleTextureBitmap:Class;
+		private var particleTextureData1:Bitmap = new particleTextureBitmap();
+		
+		//start
+		[Embed(source = "../lib/sparks1.obj", mimeType = "application/octet-stream")]
+		private var explosionData1:Class;
+		
+		//end
+		[Embed(source="../lib/sparks2.obj", mimeType="application/octet-stream")]
+		private var explosionData2:Class;
+		
 		
 		
 		
@@ -187,6 +213,10 @@ package
 			trace("heartbeat at " + gameTimer.gameElapsedTime + 'ms');
 			trace("player " + player.posString());
 			trace("camera " + chaseCamera.posString());
+			
+			trace("particles active: " + particleSystem.particlesActive);
+			trace("particles total: " + particleSystem.particlesCreated);
+			trace("particles polies: " + particleSystem.totalpolycount);
 		}
 		
 		private function initGUI():void 
@@ -258,7 +288,8 @@ package
 			skyTexture = context3D.createTexture(skyTextureData.width, skyTextureData.height, Context3DTextureFormat.BGRA, false);
 			uploadTextureWithMipmaps(skyTexture, skyTextureData.bitmapData);
 			
-			
+			particleTexture1 = context3D.createTexture(particleTextureData1.width, particleTextureData1.height, Context3DTextureFormat.BGRA, false);
+			uploadTextureWithMipmaps(particleTexture1, particleTextureData1.bitmapData);
 			
 			initData();
 			
@@ -371,6 +402,9 @@ package
 			sky.rotationDegreesX = 120;
 			props.push(sky);
 			
+			
+			particleSystem = new ParticleSystem();
+			particleSystem.deefineParticle("explosion", new Particle3D(explosionData2, context3D, particleTexture1, explosionData2));
 		}
 		
 		private function initShaders():void 
@@ -415,7 +449,7 @@ package
 			if (delta >= 1000)
 			{
 				var fps:Number = fpsTicks / delta * 1000;
-				fpsText.text = fps.toFixed(1) + " fps";
+				fpsText.text = fps.toFixed(1) + " fps " + scenePolycount + " polies";
 				fpsTicks = 0;
 				fpsLast = now;
 			}
@@ -445,6 +479,9 @@ package
 		
 		private function renderScene():void
 		{
+			scenePolycount = 0;
+			
+			
 			viewMatrix.identity();
 			viewMatrix.append(cameraContainer.transform);
 			
@@ -467,6 +504,9 @@ package
 				entity.render(viewMatrix, projectionMatrix);
 			for each (entity in particles)
 				entity.render(viewMatrix, projectionMatrix);
+				
+			particleSystem.render(viewMatrix, projectionMatrix);
+			scenePolycount += particleSystem.totalpolycount;
 		}
 		
 		private function gameStep(frameMS:uint):void
@@ -476,38 +516,46 @@ package
 			
 			if (gameInput.pressing.up)
 			{
-				moveZAmount = -moveSpeed * frameMS;
+				if(moveZAmount > -moveSpeed * frameMS)
+					moveZAmount -= moveSpeed * frameMS * 0.01;
+				trace("mz " + moveZAmount);
 			}
 				
 			if (gameInput.pressing.down)
 			{
-				moveZAmount = moveSpeed * frameMS * 0.5;
+				if(moveZAmount < moveSpeed * frameMS * 1)
+					moveZAmount += moveSpeed * frameMS * 0.01;
 			}
 				
 			if (gameInput.pressing.left)
 			{
-				moveXAmount -= moveAmount * 0.1;
+				if(moveXAmount > -moveAmount * 0.5)
+					moveXAmount -= moveAmount * 0.1;
 				if(moveYAmount >= -30)
 					moveYAmount -= moveAmount * 0.3;
 			}
 				
 			if (gameInput.pressing.right)
 			{
-				moveXAmount += moveAmount * 0.1;
+				if(moveXAmount < moveAmount * 0.5)
+					moveXAmount += moveAmount * 0.1;
 				if(moveYAmount <= 30)
 					moveYAmount += moveAmount * 0.3;
 			}
 			
-			if (moveZAmount <= 0)
-			{
-				playerContainer.rotationDegreesY -= moveXAmount * 0.2;
-				cameraContainer.rotationDegreesY -= moveXAmount * 0.2;
-			}
-			else if (moveZAmount > 0)
-			{
-				playerContainer.rotationDegreesY += moveXAmount * 0.2;
-				cameraContainer.rotationDegreesY += moveXAmount * 0.2;
-			}
+			playerContainer.rotationDegreesY += moveXAmount * (0.1 * moveZAmount - 0.1) * 0.2;
+			cameraContainer.rotationDegreesY += moveXAmount * (0.1 * moveZAmount - 0.1) * 0.2;
+			
+			//if (moveZAmount <= 0)
+			//{
+				//playerContainer.rotationDegreesY -= moveXAmount * 0.2;
+				//cameraContainer.rotationDegreesY -= moveXAmount * 0.2;
+			//}
+			//else if (moveZAmount >= 0)
+			//{
+				//playerContainer.rotationDegreesY += moveXAmount * 0.2;
+				//cameraContainer.rotationDegreesY += moveXAmount * 0.2;
+			//}
 			
 			
 			sin = Math.sin(playerContainer.rotationDegreesY * RAD);
@@ -520,10 +568,15 @@ package
 			
 			
 			
-			moveXAmount *= 0.96;
-			moveZAmount *= 0.96;
+			
+			if (!gameInput.pressing.up && !gameInput.pressing.down)
+				moveZAmount *= 0.99;
 			if (!gameInput.pressing.right && !gameInput.pressing.left)
-			moveYAmount *= 0.8;
+			{
+				moveXAmount *= 0.93;
+				moveYAmount *= 0.8;
+			}
+			
 			
 			
 			cameraContainer.x = playerContainer.x;
@@ -550,6 +603,17 @@ package
 			sky.x = playerContainer.x;
 			sky.y = playerContainer.y;
 			sky.z = playerContainer.z;
+			
+			
+			if (gameTimer.gameElapsedTime >= nextShootTime)
+			{
+				trace("Fire!");
+				nextShootTime = gameTimer.gameElapsedTime + shootDelay;
+				var groundzero:Matrix3D = new Matrix3D;
+				groundzero.prependTranslation(playerContainer.x + Math.random() * 200 - 100, playerContainer.y + Math.random() * 100 - 50, playerContainer.z + Math.random() * -200 - 100);
+				particleSystem.spawn("explosion", groundzero, 2000);
+			}
+			particleSystem.step(frameMS);
 				
 		}
 		

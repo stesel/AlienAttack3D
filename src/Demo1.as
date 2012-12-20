@@ -3,6 +3,8 @@ package
 	import com.adobe.utils.AGALMiniAssembler;
 	import com.adobe.utils.PerspectiveMatrix3D;
 	import components.ObjParser;
+	import components.Particle3D;
+	import components.ParticleSystem;
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.Sprite;
@@ -74,12 +76,13 @@ package
 		private var myTextureData:Bitmap = new myTextureBitmap();
 		
 		//Terrain Texture
-		[Embed(source="../lib/terrain.png")]
+		[Embed(source="../lib/terrain.jpg")]
 		private var terrainTextureBitmap:Class;
 		private var terrainTextureData:Bitmap = new terrainTextureBitmap();
 		
 		private var myTexture:Texture;
 		private var terrainTexture:Texture;
+		
 		
 		//Ship Mesh Data
 		[Embed(source="../lib/asteroids.obj", mimeType="application/octet-stream")]
@@ -91,6 +94,29 @@ package
 		private var terrainObjData:Class;
 		private var terrainMesh:ObjParser;
 		
+		
+		
+		//////Particles
+		private var nextShootYime:uint = 0;
+		private var shootDelay:uint = 0;
+		private var explo:Particle3D;
+		private var particleSystem:ParticleSystem;
+		private var scenePolycount:uint = 0;
+		
+		private var particleTexture1:Texture;
+		
+		//Sparks1 Texture
+		[Embed(source="../lib/Sparks1.jpg")]
+		private var particleTextureBitmap:Class;
+		private var particleTextureData1:Bitmap = new particleTextureBitmap();
+		
+		//start
+		[Embed(source = "../lib/sparks1.obj", mimeType = "application/octet-stream")]
+		private var explosionData1:Class;
+		
+		//end
+		[Embed(source="../lib/sparks2.obj", mimeType="application/octet-stream")]
+		private var explosionData2:Class;
 		
 		public function Demo1():void 
 		{
@@ -229,7 +255,11 @@ package
 			
 			terrainTexture = context3D.createTexture(textureSize, textureSize, Context3DTextureFormat.BGRA, false);
 			uploadTextureWithMipmaps(terrainTexture, terrainTextureData.bitmapData);
-				
+			
+			particleTexture1 = context3D.createTexture(particleTextureData1.width, particleTextureData1.height, Context3DTextureFormat.BGRA, false);
+			uploadTextureWithMipmaps(particleTexture1, particleTextureData1.bitmapData);
+			
+			
 			projectionMatrix.identity();
 			projectionMatrix.perspectiveFieldOfViewRH(45.0, swfWidth / swfHeight, 0.01, 5000);
 			
@@ -269,6 +299,9 @@ package
 			//Parse Ship and Terrain
 			myMesh = new ObjParser(myObjData, context3D, 0.2, false, true);
 			terrainMesh = new ObjParser(terrainObjData, context3D, 2, true, true);
+			
+			particleSystem = new ParticleSystem();
+			particleSystem.deefineParticle("explosion", new Particle3D(explosionData1, context3D, particleTexture1, explosionData2));
 		}
 		
 		private function initShaders():void 
@@ -346,6 +379,7 @@ package
 		
 		private function enterFrame(e:Event):void 
 		{
+			scenePolycount = 0;
 			
 			context3D.clear(0, 0, 0);
 			
@@ -408,9 +442,16 @@ package
 				//vertex rgba
 				context3D.setVertexBufferAt(2, myMesh.colorsBuffer, 0, Context3DVertexBufferFormat.FLOAT_4);
 				//render
-				context3D.drawTriangles(myMesh.indexBuffer, 0, myMesh.indexBufferCount);
+				//context3D.drawTriangles(myMesh.indexBuffer, 0, myMesh.indexBufferCount);
+				 
 				
 			}
+			
+			
+				
+			
+			particleSystem.render(viewMatrix, projectionMatrix);
+			scenePolycount += particleSystem.totalpolycount;
 				
 			context3D.present();
 				

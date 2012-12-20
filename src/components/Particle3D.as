@@ -109,7 +109,7 @@ package components
 		public function step(ms:uint):void
 		{
 			stepCounter++;
-			age += ms;
+			age += 2 * ms;
 			if (age >= ageMax)
 			{
 				active = false;
@@ -122,7 +122,7 @@ package components
 			if (ageScale[0] < 0)
 				ageScale[0] = 0;
 			if (ageScale[0] > 1)
-				ageScale = 1;
+				ageScale[0] = 1;
 			if (ageScale[1] < 0)
 				ageScale[1] = 0;
 			if (ageScale[1] > 1)
@@ -185,7 +185,6 @@ package components
 		{
 			if (!active)
 				return;
-				
 			if (!mesh)
 				return;
 			if (!context)
@@ -212,7 +211,9 @@ package components
 			context.setTextureAt(0, texture);
 			context.setVertexBufferAt(0, mesh.positionsBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
 			context.setVertexBufferAt(1, mesh.uvBuffer, 0, Context3DVertexBufferFormat.FLOAT_2);
-			context.setVertexBufferAt(2, mesh2.positionsBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
+			
+			if (mesh2)
+				context.setVertexBufferAt(2, mesh2.positionsBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
 			
 			context.setBlendFactors(blendScr, blendDst);
 			context.setDepthTest(depthTest, depthTestMode);
@@ -253,7 +254,7 @@ package components
 			{
 				if (particleshadermesh1)
 				{
-					shader = particleshadermesh1
+					shader = particleshadermesh1;
 					return;
 				}
 				trace("Compile 1 Frame Shader...");
