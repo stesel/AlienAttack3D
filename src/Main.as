@@ -144,17 +144,43 @@ package
 		
 		//////Particles
 		private var nextShootTime:uint = 0;
-		private var shootDelay:uint = 2000;
+		private var shootDelay:uint = 100;
 		private var explo:Particle3D;
 		private var particleSystem:ParticleSystem;
 		private var scenePolycount:uint = 0;
 		
 		private var particleTexture1:Texture;
+		private var particleTexture2:Texture;
+		private var particleTexture3:Texture;
+		private var particleTexture4:Texture;
+		private var particleTexture5:Texture;
 		
 		//Sparks1 Texture
 		[Embed(source="../lib/Sparks1.jpg")]
-		private var particleTextureBitmap:Class;
-		private var particleTextureData1:Bitmap = new particleTextureBitmap();
+		private var particleTextureBitmap1:Class;
+		private var particleTextureData1:Bitmap = new particleTextureBitmap1();
+		
+		//Sparks2 Texture
+		[Embed(source="../lib/Sparks2.jpg")]
+		private var particleTextureBitmap2:Class;
+		private var particleTextureData2:Bitmap = new particleTextureBitmap2();
+		
+		//Sparks3 Texture
+		[Embed(source="../lib/Particular1.jpg")]
+		private var particleTextureBitmap3:Class;
+		private var particleTextureData3:Bitmap = new particleTextureBitmap3();
+		
+		//Sparks4 Texture
+		[Embed(source="../lib/Particular2.jpg")]
+		private var particleTextureBitmap4:Class;
+		private var particleTextureData4:Bitmap = new particleTextureBitmap4();
+		
+		//Sparks5 Texture
+		[Embed(source="../lib/Particular3.jpg")]
+		private var particleTextureBitmap5:Class;
+		private var particleTextureData5:Bitmap = new particleTextureBitmap5();
+		
+		
 		
 		//start
 		[Embed(source = "../lib/sparks1.obj", mimeType = "application/octet-stream")]
@@ -291,6 +317,18 @@ package
 			particleTexture1 = context3D.createTexture(particleTextureData1.width, particleTextureData1.height, Context3DTextureFormat.BGRA, false);
 			uploadTextureWithMipmaps(particleTexture1, particleTextureData1.bitmapData);
 			
+			particleTexture2 = context3D.createTexture(particleTextureData2.width, particleTextureData2.height, Context3DTextureFormat.BGRA, false);
+			uploadTextureWithMipmaps(particleTexture2, particleTextureData2.bitmapData);
+			
+			particleTexture3 = context3D.createTexture(particleTextureData3.width, particleTextureData3.height, Context3DTextureFormat.BGRA, false);
+			uploadTextureWithMipmaps(particleTexture3, particleTextureData3.bitmapData);
+			
+			particleTexture4 = context3D.createTexture(particleTextureData4.width, particleTextureData4.height, Context3DTextureFormat.BGRA, false);
+			uploadTextureWithMipmaps(particleTexture4, particleTextureData4.bitmapData);
+			
+			particleTexture5 = context3D.createTexture(particleTextureData5.width, particleTextureData5.height, Context3DTextureFormat.BGRA, false);
+			uploadTextureWithMipmaps(particleTexture5, particleTextureData5.bitmapData);
+			
 			initData();
 			
 			projectionMatrix.identity();
@@ -404,7 +442,11 @@ package
 			
 			
 			particleSystem = new ParticleSystem();
-			particleSystem.deefineParticle("explosion", new Particle3D(explosionData2, context3D, particleTexture1, explosionData2));
+			particleSystem.deefineParticle("explosion", new Particle3D(explosionData1, context3D, particleTexture1, explosionData1));
+			particleSystem.deefineParticle("1", new Particle3D(explosionData1, context3D, particleTexture2, explosionData1));
+			particleSystem.deefineParticle("2", new Particle3D(explosionData1, context3D, particleTexture3, explosionData1));
+			particleSystem.deefineParticle("3", new Particle3D(explosionData1, context3D, particleTexture4, explosionData1));
+			particleSystem.deefineParticle("4", new Particle3D(explosionData1, context3D, particleTexture5, explosionData1));
 		}
 		
 		private function initShaders():void 
@@ -610,8 +652,47 @@ package
 				trace("Fire!");
 				nextShootTime = gameTimer.gameElapsedTime + shootDelay;
 				var groundzero:Matrix3D = new Matrix3D;
-				groundzero.prependTranslation(playerContainer.x + Math.random() * 200 - 100, playerContainer.y + Math.random() * 100 - 50, playerContainer.z + Math.random() * -200 - 100);
+				groundzero.prependTranslation(playerContainer.x + Math.random() * 200 - 100, playerContainer.y + Math.random() * 100 - 50, playerContainer.z + Math.random() * -800 - 400);
 				particleSystem.spawn("explosion", groundzero, 2000);
+				particleSystem.spawn("explosion", groundzero, 2000);
+				particleSystem.spawn("explosion", groundzero, 2000);
+				particleSystem.spawn("explosion", groundzero, 2000);
+				particleSystem.spawn("explosion", groundzero, 2000);
+				particleSystem.spawn("explosion", groundzero, 2000);
+				groundzero.prependTranslation(playerContainer.x + Math.random() * 200 - 100, playerContainer.y + Math.random() * 100 - 50, 0);
+				particleSystem.spawn("1", groundzero, 2000);
+				particleSystem.spawn("1", groundzero, 2000);
+				particleSystem.spawn("1", groundzero, 2000);
+				particleSystem.spawn("1", groundzero, 2000);
+				particleSystem.spawn("1", groundzero, 2000);
+				particleSystem.spawn("1", groundzero, 2000);
+				particleSystem.spawn("1", groundzero, 2000);
+				particleSystem.spawn("1", groundzero, 2000);
+				groundzero.prependTranslation(playerContainer.x + Math.random() * 200 - 100, playerContainer.y + Math.random() * 100 - 50, 0);
+				particleSystem.spawn("2", groundzero, 2000);
+				particleSystem.spawn("2", groundzero, 2000);
+				particleSystem.spawn("2", groundzero, 2000);
+				particleSystem.spawn("2", groundzero, 2000);
+				particleSystem.spawn("2", groundzero, 2000);
+				particleSystem.spawn("2", groundzero, 2000);
+				groundzero.prependTranslation(playerContainer.x + Math.random() * 200 - 100, playerContainer.y + Math.random() * 100 - 50, 0);
+				particleSystem.spawn("3", groundzero, 2000);
+				particleSystem.spawn("3", groundzero, 2000);
+				particleSystem.spawn("3", groundzero, 2000);
+				particleSystem.spawn("3", groundzero, 2000);
+				particleSystem.spawn("3", groundzero, 2000);
+				particleSystem.spawn("3", groundzero, 2000);
+				particleSystem.spawn("3", groundzero, 2000);
+				particleSystem.spawn("3", groundzero, 2000);
+				groundzero.prependTranslation(playerContainer.x + Math.random() * 200 - 100, playerContainer.y + Math.random() * 100 - 50, 0);
+				particleSystem.spawn("4", groundzero, 2000);
+				particleSystem.spawn("4", groundzero, 2000);
+				particleSystem.spawn("4", groundzero, 2000);
+				particleSystem.spawn("4", groundzero, 2000);
+				particleSystem.spawn("4", groundzero, 2000);
+				particleSystem.spawn("4", groundzero, 2000);
+				particleSystem.spawn("4", groundzero, 2000);
+				particleSystem.spawn("4", groundzero, 2000);
 			}
 			particleSystem.step(frameMS);
 				
