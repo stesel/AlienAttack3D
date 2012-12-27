@@ -3,6 +3,7 @@ package
 	import away3d.events.Stage3DEvent;
 	import com.adobe.utils.AGALMiniAssembler;
 	import com.adobe.utils.PerspectiveMatrix3D;
+	import components.GameActor;
 	import components.GameInput;
 	import components.GameTimer;
 	import components.Particle3D;
@@ -365,7 +366,7 @@ package
 		
 		private function initData():void 
 		{
-			
+			var actor:GameActor = new GameActor();
 			cameraContainer = new Stage3DEntity();
 			chaseCamera = new Stage3DEntity();
 			
@@ -654,45 +655,45 @@ package
 				var groundzero:Matrix3D = new Matrix3D;
 				groundzero.prependTranslation(playerContainer.x + Math.random() * 200 - 100, playerContainer.y + Math.random() * 100 - 50, playerContainer.z + Math.random() * -800 - 400);
 				particleSystem.spawn("explosion", groundzero, 2000);
-				particleSystem.spawn("explosion", groundzero, 2000);
-				particleSystem.spawn("explosion", groundzero, 2000);
-				particleSystem.spawn("explosion", groundzero, 2000);
-				particleSystem.spawn("explosion", groundzero, 2000);
-				particleSystem.spawn("explosion", groundzero, 2000);
+				//particleSystem.spawn("explosion", groundzero, 2000);
+				//particleSystem.spawn("explosion", groundzero, 2000);
+				//particleSystem.spawn("explosion", groundzero, 2000);
+				//particleSystem.spawn("explosion", groundzero, 2000);
+				//particleSystem.spawn("explosion", groundzero, 2000);
 				groundzero.prependTranslation(playerContainer.x + Math.random() * 200 - 100, playerContainer.y + Math.random() * 100 - 50, 0);
 				particleSystem.spawn("1", groundzero, 2000);
-				particleSystem.spawn("1", groundzero, 2000);
-				particleSystem.spawn("1", groundzero, 2000);
-				particleSystem.spawn("1", groundzero, 2000);
-				particleSystem.spawn("1", groundzero, 2000);
-				particleSystem.spawn("1", groundzero, 2000);
-				particleSystem.spawn("1", groundzero, 2000);
-				particleSystem.spawn("1", groundzero, 2000);
+				//particleSystem.spawn("1", groundzero, 2000);
+				//particleSystem.spawn("1", groundzero, 2000);
+				//particleSystem.spawn("1", groundzero, 2000);
+				//particleSystem.spawn("1", groundzero, 2000);
+				//particleSystem.spawn("1", groundzero, 2000);
+				//particleSystem.spawn("1", groundzero, 2000);
+				//particleSystem.spawn("1", groundzero, 2000);
 				groundzero.prependTranslation(playerContainer.x + Math.random() * 200 - 100, playerContainer.y + Math.random() * 100 - 50, 0);
 				particleSystem.spawn("2", groundzero, 2000);
-				particleSystem.spawn("2", groundzero, 2000);
-				particleSystem.spawn("2", groundzero, 2000);
-				particleSystem.spawn("2", groundzero, 2000);
-				particleSystem.spawn("2", groundzero, 2000);
-				particleSystem.spawn("2", groundzero, 2000);
+				//particleSystem.spawn("2", groundzero, 2000);
+				//particleSystem.spawn("2", groundzero, 2000);
+				//particleSystem.spawn("2", groundzero, 2000);
+				//particleSystem.spawn("2", groundzero, 2000);
+				//particleSystem.spawn("2", groundzero, 2000);
 				groundzero.prependTranslation(playerContainer.x + Math.random() * 200 - 100, playerContainer.y + Math.random() * 100 - 50, 0);
 				particleSystem.spawn("3", groundzero, 2000);
-				particleSystem.spawn("3", groundzero, 2000);
-				particleSystem.spawn("3", groundzero, 2000);
-				particleSystem.spawn("3", groundzero, 2000);
-				particleSystem.spawn("3", groundzero, 2000);
-				particleSystem.spawn("3", groundzero, 2000);
-				particleSystem.spawn("3", groundzero, 2000);
-				particleSystem.spawn("3", groundzero, 2000);
+				//particleSystem.spawn("3", groundzero, 2000);
+				//particleSystem.spawn("3", groundzero, 2000);
+				//particleSystem.spawn("3", groundzero, 2000);
+				//particleSystem.spawn("3", groundzero, 2000);
+				//particleSystem.spawn("3", groundzero, 2000);
+				//particleSystem.spawn("3", groundzero, 2000);
+				//particleSystem.spawn("3", groundzero, 2000);
 				groundzero.prependTranslation(playerContainer.x + Math.random() * 200 - 100, playerContainer.y + Math.random() * 100 - 50, 0);
 				particleSystem.spawn("4", groundzero, 2000);
-				particleSystem.spawn("4", groundzero, 2000);
-				particleSystem.spawn("4", groundzero, 2000);
-				particleSystem.spawn("4", groundzero, 2000);
-				particleSystem.spawn("4", groundzero, 2000);
-				particleSystem.spawn("4", groundzero, 2000);
-				particleSystem.spawn("4", groundzero, 2000);
-				particleSystem.spawn("4", groundzero, 2000);
+				//particleSystem.spawn("4", groundzero, 2000);
+				//particleSystem.spawn("4", groundzero, 2000);
+				//particleSystem.spawn("4", groundzero, 2000);
+				//particleSystem.spawn("4", groundzero, 2000);
+				//particleSystem.spawn("4", groundzero, 2000);
+				//particleSystem.spawn("4", groundzero, 2000);
+				//particleSystem.spawn("4", groundzero, 2000);
 			}
 			particleSystem.step(frameMS);
 				
