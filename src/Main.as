@@ -1,6 +1,5 @@
 package  
 {
-	import away3d.events.Stage3DEvent;
 	import com.adobe.utils.AGALMiniAssembler;
 	import com.adobe.utils.PerspectiveMatrix3D;
 	import components.GameActor;
@@ -296,7 +295,7 @@ package
 			
 			context3D.enableErrorChecking = true;
 			
-			context3D.configureBackBuffer(stage.stageWidth, stage.stageHeight, 3, true);
+			context3D.configureBackBuffer(stage.stageHeight, stage.stageWidth, 3, true);
 			
 			initShaders();
 			
