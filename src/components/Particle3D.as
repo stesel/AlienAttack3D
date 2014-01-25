@@ -55,7 +55,7 @@ package components
 			blendScr = Context3DBlendFactor.ONE;		
 			blendDst = Context3DBlendFactor.ONE;	
 			cullingMode = Context3DTriangleFace.NONE;
-			depthTestMode = Context3DCompareMode.ALWAYS;
+			depthTestMode = Context3DCompareMode.LESS;
 			depthTest = false;
 		}
 		

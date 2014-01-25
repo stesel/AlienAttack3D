@@ -31,7 +31,7 @@ package
 	import flash.text.TextFormat;
 	import flash.utils.getTimer;
 	
-	[SWF(width = "762", height = "480", frameRate = "66", backgroundColor = "#808080")]
+	[SWF(width = "762", height = "480", frameRate = "60", backgroundColor = "#808080")]
 	/**
 	 * ...
 	 * @author Leonid Trofimchuk
@@ -333,7 +333,7 @@ package
 			
 			projectionMatrix.identity();
 			projectionMatrix.perspectiveFieldOfViewRH(45, stage.width / stage.stageHeight, 0.01, 300000.0); 
-			
+			context3D.configureBackBuffer(this.width, this.height, 0, true);
 			stage.addEventListener(Event.RESIZE, stage_resize);
 			addEventListener(Event.ENTER_FRAME, enterFrame);
 		}
